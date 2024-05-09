@@ -53,7 +53,7 @@ def start_page():
 # Route for about page
 @app.route('/about_page', methods=['GET'])
 def about_page():
-    return render_template('about_page.html')
+    return render_template('about_page_nltk.html')
 
 # Route for discipline prediction
 @app.route('/predict_discipline', methods=['GET', 'POST'])
