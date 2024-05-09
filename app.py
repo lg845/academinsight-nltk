@@ -58,6 +58,9 @@ model_purpose.fit(X_train_bow_purpose, y_train_purpose)
 # Define Flask application
 app = Flask(__name__)
 
+# Use dynamic port binding for Heroku
+port = int(os.environ.get("PORT", 5000))
+
 # Route for starting page
 @app.route('/', methods=['GET'])
 def start_page():
@@ -160,5 +163,5 @@ def get_top_pos_tags(text):
         tag_examples[tag] = list(examples)[:5]  # Get the first 5 unique examples
     return top_tags, tag_examples
 
-if __name__ == '__main__':
-    app.run(host='localhost', port=5023)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=port)
