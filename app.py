@@ -1,7 +1,7 @@
-import nltk
 import os
 import pickle
 from flask import Flask, request, render_template
+from utils import custom_tokenizer  # Import the custom_tokenizer function
 
 # Define Flask application
 app = Flask(__name__)
