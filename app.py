@@ -51,7 +51,7 @@ def start_page():
 
 # Route for about page
 @app.route('/about_page', methods=['GET'])
-def start_page():
+def about_page():
     return render_template('about_page.html')
 
 # Route for discipline prediction
