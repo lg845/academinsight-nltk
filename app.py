@@ -1,63 +1,22 @@
-import nltk
 import os
-import pandas as pd
+import pickle
 from flask import Flask, request, render_template
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
-
-# Download NLTK data
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-
-# Load the CSV data into a Pandas DataFrame
-data = pd.read_csv('corpus.csv')
-
-# Define a custom tokenizer function
-def custom_tokenizer(text):
-    tokens = nltk.word_tokenize(text)  # Tokenize the text
-    tagged_tokens = nltk.pos_tag(tokens)  # Tag the tokens with POS
-    filtered_tokens = []
-    for token, tag in tagged_tokens:
-        # Ignore symbol tags and certain types
-        if tag.isalpha() and tag not in ['SYM', 'RBS', 'RBR']:
-            if tag in ['NNP', 'NNPS']:
-                filtered_tokens.append('NN')
-            else:
-                filtered_tokens.append(tag)
-    return filtered_tokens
-
-# Extract features (text data) and target (discipline)
-X_train_text_discipline = data['Content']  # Assuming 'Content' column contains text data
-y_train_discipline = LabelEncoder().fit_transform(data['discipline'])
-
-# Extract features (text data) and target (purpose)
-X_train_text_purpose = data['Content']  # Assuming 'Content' column contains text data
-y_train_purpose = LabelEncoder().fit_transform(data['Purpose'])
-
-# Create Bag-of-Words (BoW) vectorizer with custom tokenizer for discipline
-bow_vectorizer_discipline = CountVectorizer(tokenizer=custom_tokenizer)
-
-# Fit and transform text data for discipline
-X_train_bow_discipline = bow_vectorizer_discipline.fit_transform(X_train_text_discipline)
-
-# Create and train a logistic regression model for discipline
-model_discipline = LogisticRegression()
-model_discipline.fit(X_train_bow_discipline, y_train_discipline)
-
-# Create Bag-of-Words (BoW) vectorizer with custom tokenizer for purpose
-bow_vectorizer_purpose = CountVectorizer(tokenizer=custom_tokenizer)
-
-# Fit and transform text data for purpose
-X_train_bow_purpose = bow_vectorizer_purpose.fit_transform(X_train_text_purpose)
-
-# Create and train a logistic regression model for purpose
-model_purpose = LogisticRegression()
-model_purpose.fit(X_train_bow_purpose, y_train_purpose)
 
 # Define Flask application
 app = Flask(__name__)
 
+# Load preprocessed data
+with open('preprocessed_data.pkl', 'rb') as f:
+    preprocessed_data = pickle.load(f)
+
+X_train_text_discipline = preprocessed_data['X_train_text_discipline']
+y_train_discipline = preprocessed_data['y_train_discipline']
+X_train_text_purpose = preprocessed_data['X_train_text_purpose']
+y_train_purpose = preprocessed_data['y_train_purpose']
+bow_vectorizer_discipline = preprocessed_data['bow_vectorizer_discipline']
+model_discipline = preprocessed_data['model_discipline']
+bow_vectorizer_purpose = preprocessed_data['bow_vectorizer_purpose']
+model_purpose = preprocessed_data['model_purpose']
 # Use dynamic port binding for Heroku
 port = int(os.environ.get("PORT", 5000))
 
