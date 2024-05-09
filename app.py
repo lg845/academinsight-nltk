@@ -17,6 +17,29 @@ bow_vectorizer_discipline = preprocessed_data['bow_vectorizer_discipline']
 model_discipline = preprocessed_data['model_discipline']
 bow_vectorizer_purpose = preprocessed_data['bow_vectorizer_purpose']
 model_purpose = preprocessed_data['model_purpose']
+
+def get_top_pos_tags(text):
+    # Tokenize the text
+    tokens = nltk.word_tokenize(text)
+    # Tag the tokens with POS
+    tagged_tokens = nltk.pos_tag(tokens)
+    # Filter out unwanted tags
+    filtered_tokens = [(token.lower(), tag) for token, tag in tagged_tokens if tag.isalpha() and tag not in ['SYM', 'RBS', 'RBR']]
+    # Count the occurrences of each tag
+    tag_counts = {}
+    for _, tag in filtered_tokens:
+        tag_counts[tag] = tag_counts.get(tag, 0) + 1
+    # Sort the tags by frequency
+    sorted_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)
+    # Extract top 5 tags
+    top_tags = [tag for tag, _ in sorted_tags[:5]]
+    # Find examples for each top tag
+    tag_examples = {}
+    for tag in top_tags:
+        examples = set([token for token, t in filtered_tokens if t == tag])
+        tag_examples[tag] = list(examples)[:5]  # Get the first 5 unique examples
+    return top_tags, tag_examples
+
 # Use dynamic port binding for Heroku
 port = int(os.environ.get("PORT", 5000))
 
@@ -99,28 +122,6 @@ def predict_purpose():
             return render_template('index_nltk_purpose.html', error_message='No text data received')
     
     return render_template('index_nltk_purpose.html', predictions=None, error_message=None)
-
-def get_top_pos_tags(text):
-    # Tokenize the text
-    tokens = nltk.word_tokenize(text)
-    # Tag the tokens with POS
-    tagged_tokens = nltk.pos_tag(tokens)
-    # Filter out unwanted tags
-    filtered_tokens = [(token.lower(), tag) for token, tag in tagged_tokens if tag.isalpha() and tag not in ['SYM', 'RBS', 'RBR']]
-    # Count the occurrences of each tag
-    tag_counts = {}
-    for _, tag in filtered_tokens:
-        tag_counts[tag] = tag_counts.get(tag, 0) + 1
-    # Sort the tags by frequency
-    sorted_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)
-    # Extract top 5 tags
-    top_tags = [tag for tag, _ in sorted_tags[:5]]
-    # Find examples for each top tag
-    tag_examples = {}
-    for tag in top_tags:
-        examples = set([token for token, t in filtered_tokens if t == tag])
-        tag_examples[tag] = list(examples)[:5]  # Get the first 5 unique examples
-    return top_tags, tag_examples
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
