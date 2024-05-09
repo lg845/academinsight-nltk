@@ -1,3 +1,4 @@
+import nltk
 import os
 import pickle
 from flask import Flask, request, render_template
