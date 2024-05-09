@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title style="text-align: center; font-family: 'Lexend Exa', sans-serif;">AcademInsight: Communicative Purpose NLTK</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js library -->
+    <style>
+        /* Import Lexend fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Lexend&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa&display=swap');
+
+        /* Apply Lexend font to the entire page */
+        body {
+            font-family: "Lexend Exa", "Lexend", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            color: black; /* Set default text color to black */
+        }
+
+        /* Set background image */
+        body {
+            background-image: url("https://i.ibb.co/0qs8DN7/JAP-6294-Edit-1-2-X2.jpg");
+            /* Center and scale the background image */
+            background-position: center;
+            background-size: cover;
+            /* Set background attachment to fixed to keep the image in place */
+            background-attachment: fixed;
+        }
+
+        .center {
+            text-align: center;
+            /* Add some padding to center content vertically */
+            padding-top: 50px;
+        }
+        .left-align {
+            text-align: left;
+        }
+        .result-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 45%; /* Adjust the width as needed */
+            display: inline-block;
+            vertical-align: top;
+            background-color: rgba(255, 255, 255, 0.7); /* Add background color with transparency */
+        }
+        .sample-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 45%; /* Adjust the width as needed */
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 10px; /* Add some margin between the result box and sample box */
+            background-color: rgba(255, 255, 255, 0.7); /* Add background color with transparency */
+        }
+        .sample-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .logo-container {
+            position: absolute; /* Position the logo absolutely */
+            top: 10px; /* Adjust top position */
+            right: 10px; /* Adjust right position */
+        }
+        
+        /* Buttons style */
+        button {
+            background-color: #eb6774;
+            color: white;
+            font-family: "Lexend Exa", sans-serif;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        
+        /* Fade in animation */
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Apply fade in animation to all text content and buttons */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInAnimation 1s ease-in forwards;
+        }
+
+        /* Set title font color to white with text shadow effect */
+        h1 {
+            color: white;
+            text-shadow: 0 0 5px grey, 0 0 10px grey, 0 0 15px grey;
+        }
+    </style>
+</head>
+<body class="fade-in">
+    <!-- Logo -->
+    <div class="logo-container">
+        <a href="https://ibb.co/tBLkmfG"><img src="https://i.ibb.co/9sbN7Zp/CORAL-Logo-W.png" alt="JAP-6294-Edit-1-2-X2" style="width: 100px;"></a>
+    </div>
+
+    <h1 class="center">AcademInsight: Communicative Purpose - NLTK Version</h1>
+    <p class="center" style="color: white; font-family: 'Lexend', sans-serif;">Enter your academic text into the text box and get an analysis of its predicted communicative purpose.</p>
+    <div class="center">
+        <form method="post">
+            <textarea name="text" rows="10" cols="50" placeholder="Enter text to predict"></textarea><br>
+            <button type="submit" style="background-color: #4CAF50; color: white; border: none; border-radius: 5px; padding: 10px 20px; cursor: pointer; transition: background-color 0.3s;">Predict</button>
+        </form>
+        <form action="/" method="GET">
+        <button type="submit">Back to Home</button>
+        </form>
+    </div>
+
+    {% if predictions %}
+        {% for prediction in predictions %}
+            <div class="result-box fade-in" style="font-family: 'Lexend', sans-serif;">
+                <h2>Prediction for {{ prediction.file_name }}</h2> <!-- Show file name -->
+                <p>Predicted Purpose: 
+                    {% if prediction.purpose == 0 %}
+                        <span class="discipline-name" style="color: rgba(255, 99, 132, 1);">To Explain</span>
+                    {% elif prediction.purpose == 1 %}
+                        <span class="discipline-name" style="color: rgba(54, 132, 235, 1);">To Argue</span>
+                    {% elif prediction.purpose == 2 %}
+                        <span class="discipline-name" style="color: rgba(87, 3, 121, 0.8);">To Give a Procedural Recount</span>
+                    {% endif %}
+                </p>
+                <p>Top Probability: {{ '%.3f' % (prediction.probability * 100) }}%</p> <!-- Round top probability to nearest thousandth -->
+               <p>Probabilities:</p>
+                <ul>
+                    {% for discipline, probability in prediction.percentages.items() %}
+                        <li>
+                            {% if discipline == 0 %}
+                                <span style="color: rgba(255, 99, 132, 1);">To Explain</span>
+                            {% elif discipline == 1 %}
+                                <span style="color: rgba(54, 132, 235, 1);">To Argue</span>
+                            {% elif discipline == 2 %}
+                                <span style="color: rgba(87, 3, 121, 0.8);">To Give a Procedural Recount</span>
+                            {% endif %}
+                            : {{ '%.3f' % probability }}%
+                        </li> <!-- Show discipline name with probability -->
+                    {% endfor %}
+                </ul>
+                <canvas id="chart{{ loop.index }}" width="200" height="100"></canvas> <!-- Smaller chart canvas -->
+            </div>
+            <div class="sample-box fade-in" style="font-family: 'Lexend', sans-serif;">
+                <h2>Model Analysis and Explanation</h2>
+                <p>Our model suggests that your text input is likely meant
+                        {% if prediction.purpose == 0 %}
+                                to explain.
+                        {% elif prediction.purpose == 1 %}
+                                to argue.
+                        {% elif prediction.purpose == 2 %}
+                                to give a procedural recount.
+                        {% endif %}
+                 Some of the grammatical characteristics of your text that match with our model's identification of 
+                        {% if prediction.purpose == 0 %}
+                                explanatory
+                        {% elif prediction.purpose == 1 %}
+                                argumentative
+                        {% elif prediction.purpose == 2 %}
+                                procedural recount
+                        {% endif %}
+                        texts are: 
+                        <br>
+                        <br>
+                        {% for tag in prediction.top_tags %}
+                            {% if tag == 'CC' %}
+                                <b>Coordinating Conjunction</b>
+                            {% elif tag == 'CD' %}
+                                <b>Cardinal Number</b>
+                            {% elif tag == 'DT' %}
+                                <b>Determiner</b>
+                            {% elif tag == 'EX' %}
+                                <b>Existential There</b>
+                            {% elif tag == 'FW' %}
+                                <b>Foreign Word</b>
+                            {% elif tag == 'IN' %}
+                                <b>Preposition or Subordinating Conjunction</b>
+                            {% elif tag == 'JJ' %}
+                                <b>Adjective</b>
+                            {% elif tag == 'JJR' %}
+                                <b>Adjective, Comparative</b>
+                            {% elif tag == 'JJS' %}
+                                <b>Adjective, Superlative</b>
+                            {% elif tag == 'LS' %}
+                                <b>List Item Marker</b>
+                            {% elif tag == 'MD' %}
+                                <b>Modal</b>
+                            {% elif tag == 'NN' %}
+                                <b>Noun, Singular or Mass</b>
+                            {% elif tag == 'NNS' %}
+                                <b>Noun, Plural</b>
+                            {% elif tag == 'NNP' %}
+                                <b>Proper Noun, Singular</b>
+                            {% elif tag == 'NNPS' %}
+                                <b>Proper Noun, Plural</b>
+                            {% elif tag == 'PDT' %}
+                                <b>Predeterminer</b>
+                            {% elif tag == 'POS' %}
+                                <b>Possessive Ending</b>
+                            {% elif tag == 'PRP' %}
+                                <b>Personal Pronoun</b>
+                            {% elif tag == 'PRP$' %}
+                                <b>Possessive Pronoun</b>
+                            {% elif tag == 'RB' %}
+                                <b>Adverb</b>
+                            {% elif tag == 'RBR' %}
+                                <b>Adverb, Comparative</b>
+                            {% elif tag == 'RBS' %}
+                                <b>Adverb, Superlative</b>
+                            {% elif tag == 'RP' %}
+                                <b>Particle</b>
+                            {% elif tag == 'SYM' %}
+                                <b>Symbol</b>
+                            {% elif tag == 'TO' %}
+                                <b>to</b>
+                            {% elif tag == 'UH' %}
+                                <b>Interjection</b>
+                            {% elif tag == 'VB' %}
+                                <b>Verb, Base Form</b>
+                            {% elif tag == 'VBD' %}
+                                <b>Verb, Past Tense</b>
+                            {% elif tag == 'VBG' %}
+                                <b>Verb, Gerund or Present Participle</b>
+                            {% elif tag == 'VBN' %}
+                                <b>Verb, Past Participle</b>
+                            {% elif tag == 'VBP' %}
+                                <b>Verb, Non-3rd Person Singular Present</b>
+                            {% elif tag == 'VBZ' %}
+                                <b>Verb, 3rd Person Singular Present</b>
+                            {% elif tag == 'WDT' %}
+                                <b>Wh-Determiner</b>
+                            {% elif tag == 'WP' %}
+                                <b>Wh-Pronoun</b>
+                            {% elif tag == 'WP$' %}
+                                <b>Possessive Wh-Pronoun</b>
+                            {% elif tag == 'WRB' %}
+                                <b>Wh-Adverb</b>
+                            {% endif %}
+                            {% if not loop.last %}
+                                <br>
+                            {% endif %}
+                        {% endfor %}
+                            
+                </p>
+                <p>Here are some examples of each grammatical feature identified:</p>
+                <ul>
+                    {% for tag, examples in prediction.tag_examples.items() %}
+                        <li>
+                            {% if tag == 'CC' %}
+                                Coordinating Conjunction:
+                            {% elif tag == 'CD' %}
+                                Cardinal Number:
+                            {% elif tag == 'DT' %}
+                                Determiner:
+                            {% elif tag == 'EX' %}
+                                Existential There:
+                            {% elif tag == 'FW' %}
+                                Foreign Word:
+                            {% elif tag == 'IN' %}
+                                Preposition or Subordinating Conjunction:
+                            {% elif tag == 'JJ' %}
+                                Adjective:
+                            {% elif tag == 'JJR' %}
+                                Adjective, Comparative:
+                            {% elif tag == 'JJS' %}
+                                Adjective, Superlative:
+                            {% elif tag == 'LS' %}
+                                List Item Marker:
+                            {% elif tag == 'MD' %}
+                                Modal:
+                            {% elif tag == 'NN' %}
+                                Noun, Singular or Mass:
+                            {% elif tag == 'NNS' %}
+                                Noun, Plural:
+                            {% elif tag == 'NNP' %}
+                                Proper Noun, Singular:
+                            {% elif tag == 'NNPS' %}
+                                Proper Noun, Plural:
+                            {% elif tag == 'PDT' %}
+                                Predeterminer:
+                            {% elif tag == 'POS' %}
+                                Possessive Ending:
+                            {% elif tag == 'PRP' %}
+                                Personal Pronoun:
+                            {% elif tag == 'PRP$' %}
+                                Possessive Pronoun:
+                            {% elif tag == 'RB' %}
+                                Adverb:
+                            {% elif tag == 'RBR' %}
+                                Adverb, Comparative:
+                            {% elif tag == 'RBS' %}
+                                Adverb, Superlative:
+                            {% elif tag == 'RP' %}
+                                Particle:
+                            {% elif tag == 'SYM' %}
+                                Symbol:
+                            {% elif tag == 'TO' %}
+                                to:
+                            {% elif tag == 'UH' %}
+                                Interjection:
+                            {% elif tag == 'VB' %}
+                                Verb, Base Form:
+                            {% elif tag == 'VBD' %}
+                                Verb, Past Tense:
+                            {% elif tag == 'VBG' %}
+                                Verb, Gerund or Present Participle:
+                            {% elif tag == 'VBN' %}
+                                Verb, Past Participle:
+                            {% elif tag == 'VBP' %}
+                                Verb, Non-3rd Person Singular Present:
+                            {% elif tag == 'VBZ' %}
+                                Verb, 3rd Person Singular Present:
+                            {% elif tag == 'WDT' %}
+                                Wh-Determiner:
+                            {% elif tag == 'WP' %}
+                                Wh-Pronoun:
+                            {% elif tag == 'WP$' %}
+                                Possessive Wh-Pronoun:
+                            {% elif tag == 'WRB' %}
+                                Wh-Adverb:
+                            {% endif %}
+                            <ul>
+                                {% for example in examples %}
+                                    <li>{{ example }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <script>
+                // JavaScript code to create bar chart
+                var ctx{{ loop.index }} = document.getElementById('chart{{ loop.index }}').getContext('2d');
+                var chart{{ loop.index }} = new Chart(ctx{{ loop.index }}, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            {% for discipline, _ in prediction.percentages.items() %}
+                                "{% if discipline == 0 %}To Explain{% elif discipline == 1 %}To Argue{% elif discipline == 2 %}To Give a Procedural Recount{% endif %}",
+                            {% endfor %}
+                        ],
+                        datasets: [{
+                            label: 'Probabilities',
+                            data: [{{ prediction.percentages.values() | join(', ') }}], // Probabilities for y-axis
+                            backgroundColor: [ // Bar colors
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(87, 3, 121, 0.2)'
+                            ],
+                            borderColor: [ // Border colors
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(87, 3, 121, 0.8)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+
+    {% if error_message %}
+        <p class="center">Error processing input: {{ error_message }}</p>
+    {% endif %}
+</body>
+</html>

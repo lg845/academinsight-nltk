@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademInsight</title>
+    <style>
+        /* Import Lexend Exa font */
+        @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lexend&display=swap');
+
+        /* Apply Lexend font to the entire page */
+        body {
+            font-family: "Lexend Exa", "Lexend", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            color: black; /* Set default text color to black */
+        }
+
+        /* Set background image */
+        body {
+            background-image: url("https://i.ibb.co/0qs8DN7/JAP-6294-Edit-1-2-X2.jpg");
+            /* Center and scale the background image */
+            background-position: center;
+            background-size: cover;
+            /* Set background attachment to fixed to keep the image in place */
+            background-attachment: fixed;
+        }
+
+        /* Center-align content */
+        .center {
+            text-align: center;
+        }
+        .left-align {
+            text-align: left;
+        }
+        /* Result box */
+        .result-box {
+            border: 1px solid #ccc;
+            color: black;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 45%; /* Adjust the width as needed */
+            display: inline-block;
+            vertical-align: top;
+            background-color: rgba(255, 255, 255, 0.7); /* Add background color with transparency */
+        }
+
+        /* First Button Style */
+        .button-style-1 {
+            background-color: #4CAF50;
+            color: white;
+            font-family: "Lexend Exa", sans-serif;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        /* Second Button Style */
+        .button-style-2 {
+            background-color: #eb6774; /* Change color as per your preference */
+            color: white;
+            font-family: "Lexend Exa", sans-serif;
+            border: 2px solid #eb6774; /* Example border */
+            border-radius: 8px; /* Example border-radius */
+            padding: 12px 24px; /* Example padding */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        /* Set title font color to white with text shadow effect */
+        h1 {
+            color: white;
+            text-shadow: 0 0 5px grey, 0 0 10px grey, 0 0 15px grey;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Apply fade in animation to all text content and buttons */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInAnimation 1s ease-in forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="center fade-in">
+        <!-- Logo -->
+        <div class="logo-container">
+            <a href="https://ibb.co/tBLkmfG"><img src="https://i.ibb.co/9sbN7Zp/CORAL-Logo-W.png" alt="JAP-6294-Edit-1-2-X2" style="width: 100px;"></a>
+        </div>
+
+        <h1>Welcome to AcademInsight (NLTK Version)</h1>
+        <br>
+        <div class="result-box">
+            <p class= "left-align" style="font-family: 'Lexend', sans-serif;"><b>AcademInsight (NLTK Version)</b> works just the same as the original version, however in this interface you can add the text directly to the interface. AcademInsight allows teachers and students to analyze academic texts for their disciplinary and communicative purpose characteristics. <br><br>The tool has two classification functions: discipline and communicative purpose. The discipline tool classifies texts into four disciplinary groups  (arts and humanities, life sciences, social sciences, and physical sciences). The communicative purpose tool classifies texts three communicative purposes (to argue, to explain, to give a procedural recount). <br><br> The first step is to select whether you would like to classify your text for communicative purpose or discipline.</p>
+            <form action="/predict_discipline" method="GET">
+                <button class="button-style-1" type="submit">Predict Discipline</button>
+            </form>
+            <form action="/predict_purpose" method="GET">
+                <button class="button-style-1" type="submit">Predict Communicative Purpose</button>
+            </form>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <form action="/about_page" method="GET">
+            <button class="button-style-2" type="submit">About AcademInsight</button>
+        </form>
+    </div>
+</body>
+</html>
