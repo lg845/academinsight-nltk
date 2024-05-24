@@ -43,7 +43,7 @@ def get_top_pos_tags(text):
     return top_tags, tag_examples
 
 # Use dynamic port binding for Heroku
-port = int(os.environ.get("PORT", 5000))
+# port = int(os.environ.get("PORT", 5000))
 
 # Route for starting page
 @app.route('/', methods=['GET'])
@@ -125,5 +125,5 @@ def predict_purpose():
     
     return render_template('index_nltk_purpose.html', predictions=None, error_message=None)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
+# if __name__ == "__main__":
+#   app.run(host="0.0.0.0", port=port)
